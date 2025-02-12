@@ -1,0 +1,1761 @@
+<!--YMO--坦克大战--作者：ayazumi--目前版本：3.0正式版-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tank Game</title>
+    <style>
+    
+
+
+        /* 子弹发射动画 */
+        @keyframes bullet-fire {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.2); }
+          100% { transform: scale(1); }
+        }
+        
+        .bullet {
+          animation: bullet-fire 0.3s;
+        }
+
+    
+    
+    
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+        td {
+
+            border: 1px solid #ccc;
+            text-align: center;
+            vertical-align: middle;
+        }        
+		.bullet {
+            background-color: black;
+            color: white;
+        }
+.player {
+    background-color: #0055cc; /* 蓝色稍微变浅，降低饱和度 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.wall {
+    background-color: #e0e0e0; /* 灰色稍微变浅 */
+    color: #333333; /* 文字颜色稍微变暗 */
+}
+
+.birthPlace {
+    background-color: #f0e130; /* 黄色稍微变浅 */
+    color: #333333; /* 文字颜色稍微变暗 */
+}
+
+.regularTank {
+    background-color: #888888; /* 灰色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.attackTank {
+    background-color: #ff5555; /* 红色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.protectTank {
+    background-color: #008000; /* 绿色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.leaf {
+    background-color: #005a00; /* 深绿色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.earth {
+    background-color: brown; /* 棕色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.river {
+    background-color: #003366; /* 深蓝色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.ice {
+    background-color: #add8e6; /* 浅蓝色稍微变浅 */
+    color: #333333; /* 文字颜色稍微变暗 */
+}
+
+.kuuhaku {
+    background-color: white; /* 白色稍微变浅 */
+    color: #333333; /* 文字颜色稍微变暗 */
+}	
+
+.bigfooter-tile {
+  position: fixed; /* 固定位置 */
+  left: 0;
+  bottom: 33px;
+  width: 100%; /* 占满宽度 */
+  height: 200px; /* 设置你想要的高度 */
+  background-color: rgba(0, 0, 0, 0.1); /* 半透明背景色 */
+  color: white;
+  text-align: center; /* 文字居中 */
+  line-height: 16.6px; /* 垂直居中文本 */
+  border-radius: 16.6px; /* 圆角效果 */
+}
+
+.footer-tile {
+  position: fixed; /* 固定位置 */
+  left: 0;
+  bottom: 33px;
+  width: 100%; /* 占满宽度 */
+  height: 166px; /* 设置你想要的高度 */
+  background-color: rgba(0, 0, 0, 0.2); /* 半透明背景色 */
+  color: white;
+  text-align: center; /* 文字居中 */
+  line-height: 50px; /* 垂直居中文本 */
+  border-radius: 16.6px; /* 圆角效果 */
+}
+
+.square-button {
+    font-size: 32px; /* 增大文字大小 */
+    position: absolute;
+    width: 133px; /* 设置宽度 */
+    height: 133px; /* 设置高度 */
+    top: 16.6px;
+    right: 16.6px;
+    background-color: rgba(0,0,0,0.3);
+    color: white; /* 文字颜色 */
+    border: none; /* 去掉边框 */
+    border-radius: 16.6px; /* 圆角边框 */
+    transition: background-color 0.1s ease; /* 添加过渡效果 */
+}
+
+.littlesquare-button {
+    font-size: 15px; /* 增大文字大小 */
+    position: relative;
+    width: 30px; /* 设置宽度 */
+    height: 30px; /* 设置高度 */
+    background-color: rgba(0,0,0,0.3);
+    color: white; /* 文字颜色 */
+    border: none; /* 去掉边框 */
+    border-radius: 16.6px; /* 圆角边框 */
+    transition: background-color 0.1s ease; /* 添加过渡效果 */
+}
+
+.littlelongsquare-button {
+    font-size: 15px; /* 增大文字大小 */
+    position: relative;
+    width: 120px; /* 设置宽度 */
+    height: 30px; /* 设置高度 */
+    background-color: rgba(0,0,0,0.3);
+    color: white; /* 文字颜色 */
+    border: none; /* 去掉边框 */
+    border-radius: 16.6px; /* 圆角边框 */
+    transition: background-color 0.1s ease; /* 添加过渡效果 */
+	display: inline-block;
+}
+
+.square-button:active {
+    background-color: 
+    rgba(0,0,0,0.4); /* 按下时的背景颜色 */
+    transform: scale(0.95); /* 按下时稍微缩小按钮 */
+}
+
+.littlesquare-button:active {
+    background-color: rgba(0,0,0,0.4); /* 按下时的背景颜色 */
+    transform: scale(0.95); /* 按下时稍微缩小按钮 */
+}
+
+.littlelongsquare-button:active {
+    background-color: rgba(0,0,0,0.4); /* 按下时的背景颜色 */
+    transform: scale(0.95); /* 按下时稍微缩小按钮 */
+}
+
+#joystick-container {
+    position: absolute;
+    width: 133px; /* 基座直径 */
+    height: 133px; /* 基座直径 */
+    top: 16.6px;
+    left: 16.6px;
+}
+
+#joystick-base {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 50%;
+}
+
+#joystick-thumb {
+    position: absolute;
+    width: 50%; /* 拇指直径为基座的一半 */
+    height: 50%; /* 拇指直径为基座的一半 */
+    top: 25%;
+    left: 25%;
+    background-color: rgba(256,256,256,0.5);
+    border-radius: 50%;
+}
+</style>
+</head>
+<body>
+<script type="text/javascript" src="https://ymodatabase.neocities.org/res/tank_map_store.js"></script>
+<script type="text/javascript" src="https://ymodatabase.neocities.org/res/vocab.js"></script>
+<div id='nameCard' style="display: flex;position: fixed; top: 0; left: 0; width: 100%;height:16px; background-color: #f0f0f0;justify-content: center;align-items: center;font-size: 10px;font-weight: bold;"></div>
+<div id='mapzone' style="position: fixed; top:16px; left: 0;height: 70%; width: 100%; background-color: #FFFFFF;">
+	<table id="map" ></table>
+</div>
+<div id="buttonArea" style="position:fixed;bottom: 25%; left: 0; width: 100%; overflow-x: scroll; height: 5%;  background-color: #f0f0f0; gap: 18px;white-space: nowrap;">
+	<button onclick="zoomInMap()">放大地图</button>
+	<button onclick="zoomOutMap()">缩小地图</button>
+	<button id="pasteButton">从剪贴板粘贴地图</button>
+    <button onclick="importMap()" id = 'importButtom'>导入地图</button>
+	<button onclick="window.location.href='https://ymodatabase.neocities.org/tank_map_design_2';">在线制作</button>
+	<button onclick="randomMap()">随机地图</button>
+	<button onclick="window.location.href='https://ymodatabase.neocities.org/res/tank_map_store.js';">访问地图仓库</button>
+    <button onclick='gameStart()'>开始游戏</button>
+	
+
+</div>
+<div id='log' style="position: fixed; bottom: 0; left: 0; width: 50%; overflow-y: scroll; height: 25%; touch-action: pan-y; background-color: #f0f0f0; ">
+    <p>日志</p>
+    <p>上下左右以操控，空格发射子弹！</p>
+    <p>灰色是普通敌人，红色高攻速！绿色有两条命！蓝色就是你自己！！！</p>
+	<table><tr><td data-x="0" data-y="0" class="wall">不可打破的墙壁</td><td data-x="1" data-y="0" class="leaf">隐匿行踪的树叶</td><td data-x="2" data-y="0" class="earth">不堪一击的砖墙</td><td data-x="3" data-y="0" class="river">隔岸对狙的河流</td><td data-x="4" data-y="0" class="ice">脚底打滑的雪地</td><td data-x="5" data-y="0" class="birthPlace">敌人刷新处</td><td data-x="6" data-y="0" class="player">快乐老家</td></tr></table>
+	<p>上下选择难易度,回车开始！祝你好运！！！！！</p>
+</div>
+<div id='importData' style="position: fixed; bottom: 0; right: 0; width: 50%; overflow-y: scroll; height: 25%; touch-action: pan-y; background-color: #f0f0f0; ">
+    <label for="importMap">即将导入的地图数据（导入按钮在上方一堆按钮里）：</label>
+    <textarea id="importMap" rows="5" cols="50" placeholder="粘贴地图JSON数据"></textarea>
+</div>
+
+<div id = 'keyBoard' class="bigfooter-tile">
+    <button class="littlelongsquare-button" onclick="killGame();hideKillGame();" id="killGame">停止游戏</button>
+    <button class="littlelongsquare-button" onclick='gameStart();hideGameStart();' id='gameStart'>开始游戏</button>
+    <button class="littlelongsquare-button" id="swap-button" >交换左右手</button>
+    <button class="littlesquare-button" onclick = 'hideKey();' style='position:absolute;right:10px;'>×</button>
+
+    <div class="footer-tile">
+        <div id="joystick-container">
+            <div id="joystick-base"></div>
+            <div id="joystick-thumb"></div>
+        </div>
+        <button class="square-button" onclick ="fire(player);">射击</button>
+    </div>
+</div>
+
+
+<button class="littlelongsquare-button" id="openKeyBoard" onclick="showkey();" style="position:absolute;right:10px;bottom:10px;">展开键盘</button>
+
+	<script>
+        function scrollToBottom() {
+            var container = document.getElementById("log");
+            container.scrollTop = container.scrollHeight;
+        }
+    </script>
+	<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const importMapTextarea = document.getElementById('importMap');
+            const pasteButton = document.getElementById('pasteButton');
+
+            pasteButton.addEventListener('click', async () => {
+                try {
+                    // 读取剪贴板内容
+                    const clipboardData = await navigator.clipboard.readText();
+                    // 将剪贴板内容插入到textarea中
+                    importMapTextarea.value = clipboardData;
+                } catch (err) {
+                    console.error('无法读取剪贴板内容:', err);
+					importMapTextarea.value = '';
+                    alert('无法读取剪贴板内容，请手动复制！');
+                }
+            });
+        });
+		hideKillGame();
+		function hideGameStart() {
+            var gameStart = document.getElementById("gameStart");
+            var killGame = document.getElementById("killGame");			
+                killGame.style.display = " inline-block";
+                gameStart.style.display = "none";
+            
+		}
+		function hideKillGame() {
+            var gameStart = document.getElementById("gameStart");
+            var killGame = document.getElementById("killGame");			
+                gameStart.style.display = " inline-block";
+                killGame.style.display = "none";
+            
+		}
+    </script>
+    <script>
+        var width = 40;
+        var height = 30;
+        var key = "";
+        var keybefore = "";
+        var playerLifeSet = 3;
+        var playerLife = playerLifeSet;
+        var hardNess = 5; // 越高越难(现在机制已改变，但是我不敢删这个)
+
+        let birthPlaces = [[4, 4], [4, 36]];
+
+        let map = [];
+		function createMap(){
+        for (let i = 0; i < height; i++) {
+            map[i] = [];
+            for (let j = 0; j < width; j++) {
+                map[i][j] = "";
+            }
+        }
+}
+        class Tank {
+            constructor(type, Xp, Yp, Dirc, fire) {
+                this.type = type;
+                this.Xp = Xp;
+                this.Yp = Yp;
+                this.Dirc = Dirc;
+                this.fire = fire;
+            }
+
+            printtank() {
+                map[this.Yp][this.Xp] = this.type;
+
+                if (this.Dirc === 1) {
+                    map[this.Yp - 1][this.Xp] = this.type;
+                    map[this.Yp][this.Xp + 1] = this.type;
+                    map[this.Yp][this.Xp - 1] = this.type;
+                    map[this.Yp + 1][this.Xp + 1] = this.type;
+                    map[this.Yp + 1][this.Xp - 1] = this.type;
+                } else if (this.Dirc === 2) {
+                    map[this.Yp][this.Xp + 1] = this.type;
+                    map[this.Yp + 1][this.Xp] = this.type;
+                    map[this.Yp - 1][this.Xp] = this.type;
+                    map[this.Yp + 1][this.Xp - 1] = this.type;
+                    map[this.Yp - 1][this.Xp - 1] = this.type;
+                } else if (this.Dirc === 3) {
+                    map[this.Yp + 1][this.Xp] = this.type;
+                    map[this.Yp][this.Xp + 1] = this.type;
+                    map[this.Yp][this.Xp - 1] = this.type;
+                    map[this.Yp - 1][this.Xp + 1] = this.type;
+                    map[this.Yp - 1][this.Xp - 1] = this.type;
+                } else if (this.Dirc === 4) {
+                    map[this.Yp][this.Xp - 1] = this.type;
+                    map[this.Yp + 1][this.Xp] = this.type;
+                    map[this.Yp - 1][this.Xp] = this.type;
+                    map[this.Yp + 1][this.Xp + 1] = this.type;
+                    map[this.Yp - 1][this.Xp + 1] = this.type;
+                }
+            }
+
+            updatePosition(newXp, newYp) {
+                try {
+				// 定义所有需要检查的障碍物类型
+				const obstacles = ['wall', 'Player', 'regularTank', 'attackTank', 'protectTank','river','earth'];
+
+				if (this.Dirc === 1) { // Up
+					// 检查前方三格是否有障碍物
+					if (
+						obstacles.includes(map[this.Yp - 2][this.Xp]) ||
+						obstacles.includes(map[this.Yp - 2][this.Xp + 1]) ||
+						obstacles.includes(map[this.Yp - 2][this.Xp - 1])
+					) {
+						return false; // 不能移动
+					} else {
+						this.Xp = newXp; // 更新位置
+						this.Yp = newYp;
+						return true; // 成功移动
+					}
+				} else if (this.Dirc === 2) { // Right
+					if (
+						obstacles.includes(map[this.Yp][this.Xp + 2]) ||
+						obstacles.includes(map[this.Yp + 1][this.Xp + 2]) ||
+						obstacles.includes(map[this.Yp - 1][this.Xp + 2])
+					) {
+						return false;
+					} else {
+						this.Xp = newXp;
+						this.Yp = newYp;
+						return true;
+					}
+				} else if (this.Dirc === 3) { // Down
+					if (
+						obstacles.includes(map[this.Yp + 2][this.Xp]) ||
+						obstacles.includes(map[this.Yp + 2][this.Xp + 1]) ||
+						obstacles.includes(map[this.Yp + 2][this.Xp - 1])
+					) {
+						return false;
+					} else {
+						this.Xp = newXp;
+						this.Yp = newYp;
+						return true;
+					}
+				} else if (this.Dirc === 4) { // Left
+					if (
+						obstacles.includes(map[this.Yp][this.Xp - 2]) ||
+						obstacles.includes(map[this.Yp + 1][this.Xp - 2]) ||
+						obstacles.includes(map[this.Yp - 1][this.Xp - 2])
+					) {
+						return false;
+					} else {
+						this.Xp = newXp;
+						this.Yp = newYp;
+						return true;
+					}
+				}
+                } catch (error) {
+                    return false;
+                }
+            }
+        }
+
+        class Player extends Tank {
+            constructor(type, Xp, Yp, Dirc, fire) {
+                super(type, Xp, Yp, Dirc, fire);
+            }
+        }
+
+        class regularTank extends Tank {
+            constructor(type, Xp, Yp, Dirc, fire) {
+                super(type, Xp, Yp, Dirc, fire);
+            }
+        }
+
+        class attackTank extends Tank {
+            constructor(type, Xp, Yp, Dirc, fire) {
+                super(type, Xp, Yp, Dirc, fire);
+            }
+        }
+
+        class protectTank extends Tank {
+            constructor(type, Xp, Yp, Dirc, fire) {
+                super(type, Xp, Yp, Dirc, fire);
+            }
+        }
+
+        let bullets = [];
+
+        class bullet {
+            constructor(Xp, Yp, Dirc , type) {
+                this.Xp = Xp;
+                this.Yp = Yp;
+                this.Dirc = Dirc;
+				this.type = type;
+            }
+
+            updatePosition(id) {
+                try {
+
+    if (bullets[id] == null) return;
+
+    const directions = {
+        1: { dx: 0, dy: -1 }, 
+        2: { dx: 1, dy: 0 },  
+        3: { dx: 0, dy: 1 },  
+        4: { dx: -1, dy: 0 }  
+    };
+
+    const dir = directions[this.Dirc];
+    const newX = this.Xp + dir.dx;
+    const newY = this.Yp + dir.dy;
+
+
+
+
+	if (map[newY][newX] === 'earth') {
+		if (bullets[id].type === 'Player') {
+			player.fire = fireLoadTime;
+		}
+		bullets[id] = null;
+
+		for (let dy = -1; dy <= 1; dy++) {
+			for (let dx = -1; dx <= 1; dx++) {
+				const targetX = this.Xp + dx;
+				const targetY = this.Yp + dy;
+				for (let i = 0; i < earths.length; i++) {
+					const thisearth = earths[i];
+					if (targetX === thisearth[1] && targetY === thisearth[0]) {		
+						earths[i] = [null, null];
+						printMap();
+					}
+				} 
+			}
+		}
+		bullets[id] = null;
+		return true;
+	}else if(map[this.Yp][this.Xp] === 'earth'){
+		for (let dy = -1; dy <= 1; dy++) {
+			for (let dx = -1; dx <= 1; dx++) {
+				const targetX = this.Xp + dir.dx + dx;
+				const targetY = this.Yp - dir.dy + dy;
+				for (let i = 0; i < earths.length; i++) {
+					const thisearth = earths[i];
+					if (targetX === thisearth[1] && targetY === thisearth[0]) {		
+						earths[i] = [null, null];
+						printMap();
+					}
+				} 
+			}
+		}
+        bullets[id] = null;
+		return true;
+	}
+	
+    if (map[newY][newX] === 'wall' || map[this.Yp][this.Xp] === 'wall') {
+		if(bullets[id].type === 'Player'){
+		player.fire = fireLoadTime;
+		}
+        bullets[id] = null;
+        return true;
+    }	
+
+    if (map[newY][newX] === 'bullet' || map[this.Yp][this.Xp] === 'bullet'|| map[this.Yp - dir.dy][this.Xp - dir.dx] === 'bullet') {
+        bullets[id] = null;
+        for (let i = 0; i < bullets.length; i++) {
+            const bullet = bullets[i];
+            if (bullet != null && 
+                (bullet.Xp === newX && bullet.Yp === newY || 
+                 bullet.Xp === this.Xp && bullet.Yp === this.Yp || 
+                 bullet.Xp === this.Xp - dir.dx && bullet.Yp === this.Yp - dir.dy)) {
+                bullets[i] = null;
+            }
+        }
+        return true;
+    }
+
+
+    this.Xp = this.Xp + dir.dx+ dir.dx;
+    this.Yp = this.Yp + dir.dy+ dir.dy;
+}
+                 catch (error) {
+                    bullets[id] = null;
+                    return true;
+                }
+            }
+
+            printBullet() {
+                try {
+                    map[this.Yp][this.Xp] = 'bullet';
+                } catch (error) {
+                    return true;
+                }
+            }
+        }
+		
+		function zoomInMap(){
+			cella = cella + 0.5;
+			printMap();
+		}
+		
+		function zoomOutMap(){
+			cella = cella - 0.5;
+			printMap();
+		}
+
+        function printMap() {
+            const table = document.getElementById('map');
+            table.innerHTML = '';
+
+            for (let i = 0; i < height; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < width; j++) {
+                    const cell = document.createElement('td');
+					cell.style.width = cella-3 + 'px';
+					cell.style.height = cella-3 + 'px';
+                    if (map[i][j] === 'Player') {
+                        cell.classList.add('player');
+                        cell.textContent = '';
+                    } else if (map[i][j] === 'wall') {
+                        cell.classList.add('wall');
+                        cell.textContent = '';
+                    } else if (map[i][j] === 'bullet') {
+                        cell.classList.add('bullet');
+                        cell.textContent = '';
+                    } else if (map[i][j] === 'birthPlace') {
+                        cell.classList.add('birthPlace');
+                        cell.textContent = '';
+                    } else if (map[i][j] === 'regularTank') {
+                        cell.classList.add('regularTank');
+                        cell.textContent = '';
+                    } else if (map[i][j] === 'attackTank') {
+                        cell.classList.add('attackTank');
+                        cell.textContent = '';
+                    } else if (map[i][j] === 'protectTank') {
+                        cell.classList.add('protectTank');
+                        cell.textContent = '';
+                    } else if (map[i][j] === 'leaf') {
+                        cell.classList.add('leaf');
+                        cell.textContent = '';
+                    } else if (map[i][j] === 'earth') {
+                        cell.classList.add('earth');
+                        cell.textContent = '';
+                    } else if (map[i][j] === 'river') {
+                        cell.classList.add('river');
+                        cell.textContent = '';
+                    } else if (map[i][j] === 'ice') {
+                        cell.classList.add('ice');
+                        cell.textContent = '';
+                    }
+                    row.appendChild(cell);
+                }
+                table.appendChild(row);
+            }
+        }
+		
+		function printWords() {
+            const table = document.getElementById('map');
+            table.innerHTML = '';
+
+            for (let i = 0; i < 40; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < 10; j++) {
+                    const cell = document.createElement('td');
+					try{
+						cell.textContent = vocabList[i*10 + j][0]+vocabList[i*10 + j][1];
+						row.appendChild(cell);
+                    }catch(error){
+						table.appendChild(row);
+					}
+                }
+                table.appendChild(row);
+            }
+        }
+		
+        function clearMap() {
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    map[i][j] = "";
+                }
+            }
+        }
+		
+		
+		
+		function stopTick(){
+			tickNumber = 0;
+			gamemode = 0;
+            clearInterval(intervalId);		
+		}
+		
+		let tickNumber = 0;
+let nowDirection = 0 ;
+let sureIsPhone = false;
+        function tick() {
+			if(touchFishOn === true){
+				printWords();
+			}else if (playerLife > 0) {
+				tickNumber = tickNumber + 1;
+                clearMap();
+
+                decideBornTank();
+                setWalls();
+				setrivers();
+				setearths();
+				setices();
+				if(touchMode){
+				key = nowDirection; 
+				if(key === "1"||key === "2"||key === "3"||key === "4"){
+				sureIsPhone = true;
+				}
+				}
+                if (key != '') {
+					move(player,Number(key));
+				}
+                setBirthPlaces();
+                
+                loadFire(player);
+				try{
+                player.printtank();
+				}catch(error){
+				scrollToBottom();
+				}
+
+                for (let i = 0; i < bullets.length; i++) {
+                    const bullet = bullets[i];
+                    if (bullet != null) {
+                        bullet.updatePosition(i);
+                        checkHitPlayer(bullet, i);
+                        bullet.printBullet();
+                    }
+                }
+
+                for (let i = 0; i < Tanks.length; i++) {
+                    const tank = Tanks[i];
+                    if (tank != null) {
+                        checkDeath(tank, i);
+                        loadFire(tank);
+                        tankAI(tank,i);
+                        tank.printtank();
+                    }
+                }
+				setLeafs();
+                printMap();
+                if (key != "") { keybefore = key; }
+                key = "";
+            } else {
+				
+				stopTick();
+				document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p style = "color:red;">您已死亡！您在'+ hardnessList[tempHardness%4] + '难度下共计消灭敌军' + killNumber + '辆，是大佬！</p>';
+				document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>重新选择难易度再次游戏！</p>';
+				document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>难易度已设为' + hardnessList[tempHardness%4] + '</p>';
+				hideKillGame();
+				scrollToBottom();
+            }
+        }
+
+        function checkHitPlayer(bullet, i) {
+            try {
+                if (map[bullet.Yp][bullet.Xp] === 'Player') {
+                    playerLife = playerLife - 1;
+					document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p style = "color:red;">被击中！剩余生命' + playerLife + '</p>';
+					scrollToBottom();
+					player.Xp=playerBirth[0];
+					player.Yp=playerBirth[1];
+					player.printtank()
+					printMap();
+                    bullets[i] = null;
+                }
+            } catch (error) {
+                return true;
+            }
+        }
+
+        function checkBulletUse(bulletPositions) {
+            for (let i = 0; i < bullets.length; i++) {
+                const bullet = bullets[i];
+                if (bullet != null && bullet.Xp === bulletPositions[0] && bullet.Yp === bulletPositions[1]) {
+					if(bullet.type === 'Player'){
+						killNumber ++;
+						player.fire = fireLoadTime;
+						document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>消灭坦克一辆！</p>';
+						scrollToBottom();
+					}else{
+						document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>敌军自残！</p>';
+						scrollToBottom();			
+					}
+                    bullets[i] = null;
+                }
+            }
+        }
+
+        function checkBulletAround(Xp, Yp) {
+            const bulletPositions = [];
+
+            if (map[Yp - 1][Xp - 1] == 'bullet') bulletPositions.push([Xp - 1, Yp - 1]);
+            if (map[Yp - 1][Xp] == 'bullet') bulletPositions.push([Xp, Yp - 1]);
+            if (map[Yp - 1][Xp + 1] == 'bullet') bulletPositions.push([Xp + 1, Yp - 1]);
+
+            if (map[Yp][Xp - 1] == 'bullet') bulletPositions.push([Xp - 1, Yp]);
+            if (map[Yp][Xp] == 'bullet') bulletPositions.push([Xp, Yp]);
+            if (map[Yp][Xp + 1] == 'bullet') bulletPositions.push([Xp + 1, Yp]);
+
+            if (map[Yp + 1][Xp - 1] == 'bullet') bulletPositions.push([Xp - 1, Yp + 1]);
+            if (map[Yp + 1][Xp] == 'bullet') bulletPositions.push([Xp, Yp + 1]);
+            if (map[Yp + 1][Xp + 1] == 'bullet') bulletPositions.push([Xp + 1, Yp + 1]);
+
+            return bulletPositions;
+        }
+
+        function checkDeath(tank, i) {
+            const Yp = tank.Yp;
+            const Xp = tank.Xp;
+            const bulletPositions = checkBulletAround(Xp, Yp);
+
+            if (bulletPositions.length > 0) {
+                for (let j = 0; j < bulletPositions.length; j++) {
+                    checkBulletUse(bulletPositions[j]);
+                }
+                killTank(tank, i);
+            }
+        }
+		let killNumber=0;
+        function killTank(tank, i) {
+            if (tank.constructor === protectTank) {
+                tank.type = 'regularTank';
+                Object.setPrototypeOf(tank, regularTank.prototype);
+            } else {
+                Tanks[i] = null;
+				
+            }
+        }
+		let sayOrNOt = false;
+        function loadFire(tank) {
+            if (tank.fire < fireLoadTime) {
+                tank.fire = tank.fire + 1;
+				if(tank.type === 'Player'){sayOrNOt = false;}
+                if (tank.type === 'attackTank') {
+                    tank.fire = tank.fire + 1;
+                }
+            } else {
+                tank.fire = fireLoadTime;
+				if(tank.type === 'Player'){
+				if(sayOrNOt === false){
+				document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>装填完毕，随时可以发射！</p>';
+		        scrollToBottom();
+				sayOrNOt = true;
+				}
+				}
+            }
+        }
+		
+		let walls =[];
+        function setWalls() {
+		try {
+			for (let i=0;i<walls.length;i++){
+				map[walls[i][0]][walls[i][1]] = 'wall';
+			}
+        }
+		catch (error) {
+        scrollToBottom();
+		}
+		}
+		
+		
+		let leafList =[];
+        function setLeafs() {
+		try {
+			for (let i=0;i<leafList.length;i++){
+				map[leafList[i][0]][leafList[i][1]] = 'leaf';
+			}
+		}
+		catch (error) {
+        scrollToBottom();
+		}
+		}
+		
+		let earths = [];
+		let originEarths = [];
+        function setearths() {
+		try {
+			for (let i=0;i<earths.length;i++){
+			try {
+				map[earths[i][0]][earths[i][1]] = 'earth';
+			}catch (error) {
+			scrollToBottom();
+			}
+		}
+		}
+		catch (error) {
+        scrollToBottom();
+		}
+		
+		}
+		
+		let rivers = [];
+        function setrivers() {
+		try {
+			for (let i=0;i<rivers.length;i++){
+				map[rivers[i][0]][rivers[i][1]] = 'river';
+			}
+		}
+		catch (error) {
+        scrollToBottom();
+		}		
+		}
+		
+		let ices = [];
+        function setices() {
+		try {
+			for (let i=0;i<ices.length;i++){
+				map[ices[i][0]][ices[i][1]] = 'ice';
+			}
+		}
+		catch (error) {
+        scrollToBottom();
+		}		
+		}
+		
+        function setBirthPlaces() {
+            for (let i = 0; i < birthPlaces.length; i++) {
+                let birthPlace = birthPlaces[i];
+                map[birthPlace[0]][birthPlace[1]] = 'birthPlace';
+            }
+        }
+
+        let Tanks = [];
+        let tankTypeList = ['regularTank', 'attackTank', 'protectTank'];
+        let randomNumber1 = 0;
+        let randomNumber2 = 0;
+
+        function decideBornTank() {
+          randomNumber1 = Math.floor(Math.random() * 100);
+          const probability = Math.max(1, 30 - Math.floor(tickNumber * 0.01)); // 确保概率不小于1
+          if (randomNumber1 % probability === 0) {  // 坦克出生概率
+              randomNumber1 = Math.floor(Math.random() * 100);
+              randomNumber2 = Math.floor(Math.random() * 100);
+              bornTank(tankTypeList[randomNumber2 % tankTypeList.length], birthPlaces[randomNumber1 % birthPlaces.length]);
+          }
+      }
+
+
+        let fireLoadTime = 8; // 装弹时间
+
+        function bornTank(type, place) {
+		randomNumber1 = Math.floor(Math.random() * 100);
+            if (type === 'regularTank') {
+                const newRegularTank = new regularTank('regularTank', place[1], place[0], (randomNumber1 % 4) + 1, fireLoadTime);
+                Tanks.push(newRegularTank);
+            } else if (type === 'attackTank') {
+                const newRegularTank = new attackTank('attackTank', place[1], place[0], (randomNumber1 % 4) + 1, fireLoadTime);
+                Tanks.push(newRegularTank);
+            } else if (type === 'protectTank') {
+                const newRegularTank = new protectTank('protectTank', place[1], place[0], (randomNumber1 % 4) + 1, fireLoadTime);
+                Tanks.push(newRegularTank);
+            }
+        }
+		
+		function returnOneBasedOnInput(input) {
+    // 根据输入的数字，确定相应的概率
+    let probability;
+    switch (input) {
+        case 0:
+            probability = 0.20;
+            break;
+        case 1:
+            probability = 0.40;
+            break;
+        case 2:
+            probability = 0.60;
+            break;
+        case 3:
+            probability = 0.80;
+            break;
+        default:
+            throw new Error('输入必须是1到4之间的整数');
+    }
+    // 根据概率返回0或1
+    if (Math.random() < probability) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+		
+
+        function tankAI(tank,id) {
+            randomNumber1 = Math.floor(Math.random() * 100);
+            if (randomNumber1 % 1 === 0) { // 是否动
+                randomNumber1 = Math.floor(Math.random() * 100);
+                if (returnOneBasedOnInput(hardNess) === 0) { // 蠢决定
+                    randomNumber1 = Math.floor(Math.random() * 100);
+                    if (randomNumber1 % 7 != 0) { // 是否走直线
+                        move(tank, tank.Dirc);
+                    } else { // 转弯
+                        randomNumber1 = Math.floor(Math.random() * 100);
+                        move(tank,(randomNumber1 % 4) + 1);
+                    }
+
+                    randomNumber1 = Math.floor(Math.random() * 100);
+                    if (tank.type === 'attackTank') {
+                        if (randomNumber1 % 1 === 0) { // 开炮
+                            fire(tank);
+                        }
+                    }
+                    if (randomNumber1 % hardNess * 5 === 0) { // 开炮
+                        fire(tank);
+                    }
+                } else { // 好决定
+                    let deltaX = player.Xp - tank.Xp;
+                    let deltaY = player.Yp - tank.Yp;
+				
+				
+
+				if (isWallAhead(tank)) {
+					if (tank.Dirc === 1) { // 当前方向为向上
+						move(tank, 2); 
+					} else if (tank.Dirc === 2) { // 当前方向为向右
+						move(tank, 3); 
+					} else if (tank.Dirc === 3) { // 当前方向为向下
+						move(tank, 4); 
+					} else if (tank.Dirc === 4) { // 当前方向为向左
+						move(tank, 1); 
+					}
+					move(tank,tank.Dirc);
+				}else if(isWallLeft(tank)&& id%3 === 0){
+					move(tank,tank.Dirc);
+					if (tank.Dirc === 1) { // 当前方向为向上
+						move(tank, 4); 
+					} else if (tank.Dirc === 2) { // 当前方向为向右
+						move(tank, 1); 
+					} else if (tank.Dirc === 3) { // 当前方向为向下
+						move(tank, 2);
+					} else if (tank.Dirc === 4) { // 当前方向为向左
+						move(tank, 3); 
+					}
+					move(tank,tank.Dirc);
+				}else {
+					// 如果没有墙壁，根据与玩家的相对位置移动
+					
+					if (deltaX === 0 || deltaY === 0) { // 在一条线上
+						if (deltaX === 0) { // 垂直方向
+							if (deltaY > 0) {
+							// 向下移动
+								move(tank, 3);
+							} else {
+								  // 向上移动
+									move(tank, 1);
+								
+							}
+						} else if (deltaY === 0) { // 水平方向
+							if (deltaX > 0) {
+								 // 向右移动
+									move(tank, 2);
+								
+							} else {
+								// 向左移动
+									move(tank, 4);
+								
+							}
+						}
+					}
+					if (Math.abs(deltaX) < Math.abs(deltaY)) {
+						if (deltaX > 0) {
+							move(tank, 2); // 向右移动
+						} else {
+							move(tank, 4); // 向左移动
+						}
+					} else {
+						if (deltaY > 0) {
+							move(tank, 3); // 向下移动
+						} else {
+							move(tank, 1); // 向上移动
+						}
+					}
+				}
+
+				if (killMenber(tank)&&returnOneBasedOnInput(hardNess)){
+	
+                    if (tank.Xp === player.Xp || tank.Yp === player.Yp ) { // 是否发射子弹
+                        if (tank.Xp === player.Xp && tank.Yp > player.Yp) {
+                            move(tank, 1);
+                        } else if (tank.Xp === player.Xp && tank.Yp < player.Yp) {
+                            move(tank, 3);
+                        } else if (tank.Xp < player.Xp && tank.Yp === player.Yp) {
+                            move(tank, 2);
+                        } else if (tank.Xp > player.Xp && tank.Yp === player.Yp) {
+                            move(tank, 4);
+                        }
+
+                        fire(tank);
+                    }
+                }
+				
+            }
+        }
+}
+		function killMenber(thistank){
+			for (let i = 0; i < Tanks.length; i++) {
+                const tank = Tanks[i];
+                if (tank != null) {
+					if (thistank.Dirc === 1) { // Up
+						if (thistank.Yp > tank.Yp && thistank.Xp === tank.Xp && player.Yp < tank.Yp) {
+							return false;
+						}
+					} else if (thistank.Dirc === 2) { // Right
+						if (thistank.Xp < tank.Xp && thistank.Yp === tank.Yp && player.Xp > tank.Xp) {
+							return false;
+						}
+					} else if (thistank.Dirc === 3) { // Down
+						if (thistank.Yp < tank.Yp && thistank.Xp === tank.Xp && player.Yp > tank.Yp) {
+							return false;
+						}
+					} else if (thistank.Dirc === 4) { // Left
+						if (thistank.Xp > tank.Xp && thistank.Yp === tank.Yp && player.Xp < tank.Xp) {
+							return false;
+						}
+					}
+                }
+            }
+			return true;
+		}
+		
+
+        function move(tank, Dirc) {
+            if (tank.Dirc === Dirc) {
+				const targetX = tank.Xp;
+				const targetY = tank.Yp;
+				for (let i = 0; i < ices.length; i++) {
+					const thisice = ices[i];
+					if (targetX === thisice[1] && targetY === thisice[0]) {		
+					
+                if (tank.Dirc === 1) { // Up
+                    tank.updatePosition(tank.Xp, tank.Yp - 1);
+                } else if (tank.Dirc === 2) { // Right
+                    tank.updatePosition(tank.Xp + 1, tank.Yp);
+                } else if (tank.Dirc === 3) { // Down
+                    tank.updatePosition(tank.Xp, tank.Yp + 1);
+                } else if (tank.Dirc === 4) { // Left
+                    tank.updatePosition(tank.Xp - 1, tank.Yp);
+                }
+						}
+					} 
+	
+                if (tank.Dirc === 1) { // Up
+                    tank.updatePosition(tank.Xp, tank.Yp - 1);
+                } else if (tank.Dirc === 2) { // Right
+                    tank.updatePosition(tank.Xp + 1, tank.Yp);
+                } else if (tank.Dirc === 3) { // Down
+                    tank.updatePosition(tank.Xp, tank.Yp + 1);
+                } else if (tank.Dirc === 4) { // Left
+                    tank.updatePosition(tank.Xp - 1, tank.Yp);
+                }
+            } else {
+                tank.Dirc = Dirc;
+            }
+        }
+		
+function isWallAhead(tank) {
+    const obstacleTypes = ['wall', 'river']; // 障碍物类型列表
+
+    if (tank.Dirc === 1) { // 向上
+        return (
+            obstacleTypes.includes(map[tank.Yp - 2][tank.Xp]) || // 前一格
+            obstacleTypes.includes(map[tank.Yp - 2][tank.Xp - 1]) || // 左侧
+            obstacleTypes.includes(map[tank.Yp - 2][tank.Xp + 1]) // 右侧
+        );
+    } else if (tank.Dirc === 2) { // 向右
+        return (
+            obstacleTypes.includes(map[tank.Yp][tank.Xp + 2]) || // 前一格
+            obstacleTypes.includes(map[tank.Yp - 1][tank.Xp + 2]) || // 上侧
+            obstacleTypes.includes(map[tank.Yp + 1][tank.Xp + 2]) // 下侧
+        );
+    } else if (tank.Dirc === 3) { // 向下
+        return (
+            obstacleTypes.includes(map[tank.Yp + 2][tank.Xp]) || // 前一格
+            obstacleTypes.includes(map[tank.Yp + 2][tank.Xp - 1]) || // 左侧
+            obstacleTypes.includes(map[tank.Yp + 2][tank.Xp + 1]) // 右侧
+        );
+    } else if (tank.Dirc === 4) { // 向左
+        return (
+            obstacleTypes.includes(map[tank.Yp][tank.Xp - 2]) || // 前一格
+            obstacleTypes.includes(map[tank.Yp - 1][tank.Xp - 2]) || // 上侧
+            obstacleTypes.includes(map[tank.Yp + 1][tank.Xp - 2]) // 下侧
+        );
+    }
+}
+function isWallLeft(tank) {
+    const obstacleTypes = ['wall', 'river']; // 障碍物类型列表
+
+    if (tank.Dirc === 2) { // 向上
+        return (
+            obstacleTypes.includes(map[tank.Yp - 2][tank.Xp]) || // 前一格
+            obstacleTypes.includes(map[tank.Yp - 2][tank.Xp - 1]) || // 左侧
+            obstacleTypes.includes(map[tank.Yp - 2][tank.Xp + 1]) // 右侧
+        );
+    } else if (tank.Dirc === 3) { // 向右
+        return (
+            obstacleTypes.includes(map[tank.Yp][tank.Xp + 2]) || // 前一格
+            obstacleTypes.includes(map[tank.Yp - 1][tank.Xp + 2]) || // 上侧
+            obstacleTypes.includes(map[tank.Yp + 1][tank.Xp + 2]) // 下侧
+        );
+    } else if (tank.Dirc === 4) { // 向下
+        return (
+            obstacleTypes.includes(map[tank.Yp + 2][tank.Xp]) || // 前一格
+            obstacleTypes.includes(map[tank.Yp + 2][tank.Xp - 1]) || // 左侧
+            obstacleTypes.includes(map[tank.Yp + 2][tank.Xp + 1]) // 右侧
+        );
+    } else if (tank.Dirc === 1) { // 向左
+        return (
+            obstacleTypes.includes(map[tank.Yp][tank.Xp - 2]) || // 前一格
+            obstacleTypes.includes(map[tank.Yp - 1][tank.Xp - 2]) || // 上侧
+            obstacleTypes.includes(map[tank.Yp + 1][tank.Xp - 2]) // 下侧
+        );
+    }
+}
+
+function fire(tank) {
+    if (tank.fire === fireLoadTime) {
+        let bulletX = tank.Xp;
+        let bulletY = tank.Yp;
+
+        // 根据坦克的方向调整子弹的初始位置
+        if (tank.Dirc === 1) { // Up
+            bulletY -= 2;
+        } else if (tank.Dirc === 2) { // Right
+            bulletX += 2;
+        } else if (tank.Dirc === 3) { // Down
+            bulletY += 2;
+        } else if (tank.Dirc === 4) { // Left
+            bulletX -= 2;
+        }
+
+        // 创建子弹
+        const newBullet = new bullet(bulletX, bulletY, tank.Dirc,tank.type);
+        bullets.push(newBullet);
+        tank.fire = 0;
+    } else {
+        if (tank.type === 'Player') {
+            document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>装填中！</p>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+    }
+}
+
+        let intervalId;
+		
+
+        function init() {
+			detectMobileAndAct();	
+			killNumber = 0;
+			gamemode = 1;
+            clearMap();
+            player = null;
+            Tanks = [];
+            bullets = [];
+			earths = JSON.parse(JSON.stringify(originEarths));
+            playerLife = playerLifeSet;
+			try{
+            player = new Player('Player', playerBirth[0], playerBirth[1], 1, fireLoadTime);
+			}catch(error){
+				scrollToBottom();
+			}
+			
+            intervalId = setInterval(tick, 150);
+			
+			try{
+            player.printtank();
+			}catch(error){
+				scrollToBottom();
+			}
+            printMap();
+        }
+
+        let player;
+		let gamemode = 0;
+
+
+		let tempHardness = 401;
+		hardnessList = ['easy','normal','hard','lunatic'];
+		document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>难易度已设为' + hardnessList[tempHardness%4] + '</p>';
+        scrollToBottom();
+		
+		
+		function gameStart(){
+						hardNess=tempHardness%4;
+				
+				document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>难易度已设为' + hardnessList[tempHardness%4] + '，游戏开始！</p><h1>PanzerVor!</h1>';
+				scrollToBottom();
+				init();
+		}
+		
+		 document.addEventListener('keydown', function(event) {
+		 if(gamemode === 0){
+		 	if (tempHardness < 10){tempHardness = tempHardness + 400;}
+            if (event.key === 'Enter') {
+				gameStart();
+            } else if (event.key === "ArrowUp" || event.key === "w" ) {
+                tempHardness = tempHardness + 1;
+				document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>难易度已设为' + hardnessList[tempHardness%4] + '</p>';
+				scrollToBottom();
+            } else if (event.key === "ArrowDown" || event.key === "s" ) {
+                tempHardness = tempHardness - 1;
+				document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>难易度已设为' + hardnessList[tempHardness%4] + '</p>';
+		        scrollToBottom();		
+            }
+		}
+        });
+		
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "ArrowUp" || event.key === "w") {
+                key = "1";
+            } else if (event.key === "ArrowRight" || event.key === "d") {
+                key = "2";
+            } else if (event.key === "ArrowDown" || event.key === "s") {
+                key = "3";
+            } else if (event.key === "ArrowLeft" || event.key === "a") {
+                key = "4";
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space'||event.key === "z"||event.key === "Z") {
+                fire(player);
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'c' || event.key === 'C') {
+	const mapElement = document.getElementById('mapzone');
+    realWidth = Math.floor(mapElement.getBoundingClientRect().width);
+    realHeight = Math.floor(mapElement.getBoundingClientRect().height);
+	importMap();	
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'r' || event.key === 'R') {
+				killGame();
+            }
+        });
+		
+		document.addEventListener('keydown', (event) => {
+            if (event.key === 'x' || event.key === 'X') {
+				switchStopGame();
+            }
+        });
+		
+		
+		
+		
+		let touchFishOn = false;
+		function switchStopGame(){
+			if(touchFishOn){
+				const elementsToShow = ['importData', 'buttonArea', 'openKeyBoard', 'log'];
+				elementsToShow.forEach((id) => {
+					const element = document.getElementById(id);
+					if (element) {
+					  element.style.display = ''; // 显示元素，恢复默认样式
+					}
+				});
+				document.getElementById('nameCard').style.display = 'flex';
+				touchFishOn = false;
+			}else{
+				const elementsToHide = ['importData', 'nameCard', 'buttonArea', 'openKeyBoard', 'log'];
+				elementsToHide.forEach((id) => {
+					const element = document.getElementById(id);
+					if (element) {
+						element.style.display = 'none'; 
+					}
+				 });
+				touchFishOn = true;
+				if(gamemode === 0){
+					printWords();
+				}
+			}
+		}
+		
+		function killGame(){
+				stopTick();
+				printMap();
+				clearMap();
+				
+                gamemode = 0;
+				document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>游戏已停止，请重新选择难易度，回车开始！</p>';
+		        scrollToBottom();
+				document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>难易度已设为' + hardnessList[hardNess%4] + '</p>';
+		        scrollToBottom();	
+		}
+
+		
+		let touchMode = false;
+		detectMobileAndAct();
+        function showkey() {
+			touchMode = true;
+            var keyBoard = document.getElementById("keyBoard");
+			var openKeyBoard = document.getElementById("openKeyBoard");
+                keyBoard.style.display = "block";
+                openKeyBoard.style.display = "none";
+            
+		}
+		function hideKey() {
+			touchMode = false;
+            var keyBoard = document.getElementById("keyBoard");
+			var openKeyBoard = document.getElementById("openKeyBoard");
+                keyBoard.style.display = "none";
+                openKeyBoard.style.display = "block";
+            
+		}
+		
+		function detectMobileAndAct() {
+  var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+  // 检测是否为移动端
+  if (/android/i.test(userAgent)) {
+    showkey();  // 如果是Android设备，运行showKey()
+  } else if (/iPhone|iPad|iPod/i.test(userAgent)) {
+    showkey();  // 如果是iOS设备，同样运行showKey()
+  } else {
+    hideKey();  // 否则，认为是桌面端，运行hideKey()
+  }
+  if(sureIsPhone){
+  showkey();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var joystickBase = document.getElementById('joystick-base');
+    var joystickThumb = document.getElementById('joystick-thumb');
+
+    joystickBase.addEventListener('touchstart', onTouchStart);
+    joystickBase.addEventListener('touchmove', onTouchMove);
+    joystickBase.addEventListener('touchend', onTouchEnd);
+
+    var baseRect, thumbRadius;
+
+    function onTouchStart(e) {
+        e.preventDefault();
+        baseRect = joystickBase.getBoundingClientRect();
+        thumbRadius = joystickThumb.offsetWidth / 2;
+        updateThumbPosition(e.touches[0].clientX, e.touches[0].clientY);
+    }
+
+    function onTouchMove(e) {
+        e.preventDefault();
+        updateThumbPosition(e.touches[0].clientX, e.touches[0].clientY);
+    }
+
+    function onTouchEnd() {
+        // 将拇指移回中心位置
+        joystickThumb.style.transform = 'translate(0, 0)';
+    }
+
+    function updateThumbPosition(touchX, touchY) {
+        var dx = touchX - (baseRect.left + baseRect.width / 2);
+        var dy = touchY - (baseRect.top + baseRect.height / 2);
+        var distance = Math.min(Math.sqrt(dx * dx + dy * dy), baseRect.width / 2 - thumbRadius);
+        var angle = Math.atan2(dy, dx);
+
+        // 更新拇指位置
+        joystickThumb.style.transform = 'translate(' + (distance * Math.cos(angle)) + 'px, ' + (distance * Math.sin(angle)) + 'px)';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var joystickBase = document.getElementById('joystick-base');
+    var joystickThumb = document.getElementById('joystick-thumb');
+
+    // 为基座和拇指添加事件监听器
+    [joystickBase, joystickThumb].forEach(function(element) {
+        element.addEventListener('touchstart', onTouchStart);
+        element.addEventListener('touchmove', onTouchMove);
+        element.addEventListener('touchend', onTouchEnd);
+    });
+
+    var baseRect, thumbRadius;
+
+function touchHardnessChange(){
+if (gamemode === 0){
+		if(!changed){
+		if (tempHardness < 10){tempHardness = tempHardness + 400;}
+		if(nowDirection === '1'){
+		    tempHardness = tempHardness + 1;
+			document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>难易度已设为' + hardnessList[tempHardness%4] + '</p>';
+		    scrollToBottom();		
+		}else if(nowDirection === '3'){
+		    tempHardness = tempHardness - 1;
+			document.getElementById('log').innerHTML = document.getElementById('log').innerHTML + '<p>难易度已设为' + hardnessList[tempHardness%4] + '</p>';
+		    scrollToBottom();		
+		}
+		changed = true;
+		}
+}
+}
+    function onTouchStart(e) {
+        e.preventDefault();
+        baseRect = joystickBase.getBoundingClientRect();
+        thumbRadius = joystickThumb.offsetWidth / 2;
+        updateThumbPosition(e.touches[0].clientX, e.touches[0].clientY);
+		
+touchHardnessChange();
+		
+    }
+let changed = false;
+    function onTouchMove(e) {
+        e.preventDefault();
+        updateThumbPosition(e.touches[0].clientX, e.touches[0].clientY);
+		
+touchHardnessChange();
+		
+    }
+
+    function onTouchEnd() {
+        // 将拇指移回中心位置
+		changed = false;
+		nowDirection = '';
+        joystickThumb.style.transform = 'translate(0, 0)';
+    }
+
+let dx = 0;
+let dy = 0;
+
+function updateThumbPosition(touchX, touchY) {
+    dx = touchX - (baseRect.left + baseRect.width / 2); // 水平偏移量
+    dy = touchY - (baseRect.top + baseRect.height / 2); // 垂直偏移量
+    var distance = Math.min(Math.sqrt(dx * dx + dy * dy), baseRect.width / 2 - thumbRadius); // 限制在摇杆范围内
+    var angle = Math.atan2(dy, dx); // 触摸点的角度
+
+    // 更新拇指位置
+    joystickThumb.style.transform = 'translate(' + (distance * Math.cos(angle)) + 'px, ' + (distance * Math.sin(angle)) + 'px)';
+
+    // 触发事件
+    var direction = getDirection(dx, dy); // 获取方向
+    //console.log('Joystick moved to:', direction); // 输出方向
+    // 你可以在这里根据方向执行其他逻辑
+}
+
+    function getDirection(dx, dy) {
+        if (Math.abs(dx) > Math.abs(dy)) {
+            if(dx > 0){
+				nowDirection = '2';
+			}else{
+				nowDirection = '4';
+			}
+        } else if (Math.abs(dx) < Math.abs(dy)) {
+            if(dy > 0){
+				nowDirection = '3';
+			} else{
+				nowDirection = '1';
+			}
+        } 
+    }
+});
+
+
+
+// 交换按钮位置的逻辑
+document.getElementById('swap-button').addEventListener('click', function() {
+    var joystickContainer = document.getElementById('joystick-container');
+    var squareButton = document.querySelector('.square-button');
+
+    // 获取当前的位置
+    var joystickTop = joystickContainer.style.top || '16.6px';
+    var joystickLeft = joystickContainer.style.left || '16.6px';
+    var squareButtonTop = squareButton.style.top || '16.6px';
+    var squareButtonRight = squareButton.style.right || '16.6px';
+
+    // 交换位置
+    joystickContainer.style.left = 'calc(100% - ' + squareButtonRight + ' - 133px)'; // 400px 是摇杆的宽度
+    squareButton.style.right = 'calc(100% - ' + joystickLeft + ' - 133px)'; // 400px 是按钮的宽度
+});
+
+    document.addEventListener('directionChange', function(event) {
+        console.log('Direction:', event.detail.direction);
+        // 在这里可以根据方向执行相应的操作
+    });
+		
+		
+		
+    </script>
+
+    <script>
+        // 获取滚动容器
+        const logDiv = document.getElementById('log');
+
+        // 监听键盘事件
+        document.addEventListener('keydown', (event) => {
+            // 检测是否是上下键
+            if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                // 阻止默认行为（滚动）
+                event.preventDefault();
+            }
+        });
+    </script>
+	
+    <script>
+        // 获取滚动容器
+        const logDiv2 = document.getElementById('importMap');
+
+        // 监听键盘事件
+        document.addEventListener('keydown', (event) => {
+            // 检测是否是上下键
+            if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                // 阻止默认行为（滚动）
+                event.preventDefault();
+            }
+        });
+    </script>
+
+    <script>
+        // 获取滚动容器
+        const logDiv3 = document.getElementById('importButtom');
+
+        // 监听键盘事件
+        document.addEventListener('keydown', (event) => {
+            // 检测是否是上下键
+            if (event.key === ' ') {
+                // 阻止默认行为（滚动）
+                event.preventDefault();
+            }
+        });
+    </script>
+	
+	<script>
+        // 获取滚动容器
+        const logDiv4 = document.getElementById('buttonArea');
+
+        // 监听键盘事件
+        document.addEventListener('keydown', (event) => {
+
+            if (event.key === ' ') {
+                // 阻止默认行为（滚动）
+                event.preventDefault();
+            }
+			 if (event.key === 'Enter') {
+                // 阻止默认行为（滚动）
+                event.preventDefault();
+            }
+        });
+    </script>
+	
+    <script>
+let cella = 0;	
+let author ='无名氏';	
+let titles = '无题'	;	
+function importMap() {
+
+			map = [];
+			walls = [];
+			birthPlaces = [];
+			playerBirth = [];
+			leafList = [];
+			originEarths = [];
+		    rivers = [];
+		    ices = [];
+			author = '无名氏';
+			title = '无题';
+			compressedData = document.getElementById('importMap').value;
+            importData = document.getElementById('importMap').value;
+            try {
+                const mapData = JSON.parse(importData);
+                width = mapData.width;
+                height = mapData.height;
+                wallLists = mapData.walls;
+				leafLists = mapData.leafs;
+				earthlists = mapData.earths;
+				riverlists = mapData.rivers;
+				icelists = mapData.ices;
+                enemySpawns = mapData.enemySpawns;
+                playerSpawn = mapData.playerSpawn;
+				authors = mapData.authors;
+				titles = mapData.titles;
+				
+			let cellWidth = Math.floor(realWidth / width);
+			let cellHeight = Math.floor(realHeight / height);
+			cella =  Math.min(cellWidth,cellHeight);
+
+				
+                map = Array.from({ length: height }, () => Array(width).fill(''));
+                clearMap();
+				try {
+                for (let wall of wallLists) {
+                    map[wall[1]][wall[0]] = 'wall';
+					walls.push([wall[1],wall[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				}
+				
+				try {
+				for (let leaf of leafLists) {
+                    map[leaf[1]][leaf[0]] = 'leaf';
+					leafList.push([leaf[1],leaf[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				}
+				
+				try {
+				for (let earth of earthlists) {
+                    map[earth[1]][earth[0]] = 'earth';
+					originEarths.push([earth[1],earth[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				}
+				
+				try {
+				for (let river of riverlists) {
+                    map[river[1]][river[0]] = 'river';
+					rivers.push([river[1],river[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				}
+				
+				try {
+				for (let ice of icelists) {
+                    map[ice[1]][ice[0]] = 'ice';
+					ices.push([ice[1],ice[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				}
+
+
+				
+				try {
+                for (let spawn of enemySpawns) {
+                    map[spawn[1]][spawn[0]] = 'birthPlace';
+					birthPlaces.push([spawn[1],spawn[0]]);
+                }
+				} catch (error) {
+				document.getElementById('log').innerHTML += '<p>敌人将无法出生！</p>';
+                scrollToBottom();
+				birthPlaces.push([null,null]);
+				}
+				
+				try {
+                if (playerSpawn) {
+                    map[playerSpawn[1]][playerSpawn[0]] = 'Player';
+					playerBirth = [playerSpawn[0],playerSpawn[1]];
+                }
+				} catch (error) {
+				document.getElementById('log').innerHTML += '<p>你将无法出生！</p>';
+                scrollToBottom();
+				playerBirth = [null,null];
+				}
+				
+				try{
+				if(author){
+					author = authors;
+				}
+				} catch(error){
+				author = '无名氏';
+				}
+				
+				try{
+				if(author){
+					title = titles;
+				}
+				} catch(error){
+				title = '无题';
+				}
+				
+				const nameCard = document.getElementById('nameCard');
+				nameCard.textContent = title ;
+				
+                printMap();
+                document.getElementById('log').innerHTML += '<p>地图导入成功！感谢' + author + '制作的地图！</p>';
+                scrollToBottom();
+				
+            } catch (error) {
+                document.getElementById('log').innerHTML += '<p>导入失败：'+error.message+'</p>';
+                scrollToBottom();
+            }
+        }
+		
+		let realHeight = 0;
+		let realWidth = 0;
+document.addEventListener('DOMContentLoaded', () => {
+    let compressedData = '{"width":40,"height":40,"walls":[[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0],[10,0],[11,0],[12,0],[13,0],[14,0],[15,0],[16,0],[17,0],[18,0],[19,0],[20,0],[21,0],[22,0],[23,0],[24,0],[25,0],[26,0],[27,0],[28,0],[29,0],[30,0],[31,0],[32,0],[33,0],[34,0],[35,0],[36,0],[37,0],[38,0],[39,0],[0,1],[39,1],[0,2],[39,2],[0,3],[39,3],[0,4],[10,4],[11,4],[12,4],[13,4],[30,4],[31,4],[32,4],[33,4],[34,4],[35,4],[39,4],[0,5],[10,5],[21,5],[35,5],[39,5],[0,6],[21,6],[35,6],[39,6],[0,7],[10,7],[21,7],[39,7],[0,8],[10,8],[39,8],[0,9],[10,9],[27,9],[28,9],[29,9],[33,9],[34,9],[35,9],[39,9],[0,10],[10,10],[39,10],[0,11],[39,11],[0,12],[12,12],[13,12],[26,12],[39,12],[0,13],[26,13],[39,13],[0,14],[15,14],[26,14],[39,14],[0,15],[15,15],[39,15],[0,16],[24,16],[39,16],[0,17],[17,17],[24,17],[39,17],[0,18],[17,18],[20,18],[22,18],[39,18],[0,19],[20,19],[22,19],[39,19],[0,20],[39,20],[0,21],[39,21],[0,22],[3,22],[4,22],[6,22],[7,22],[9,22],[11,22],[13,22],[30,22],[31,22],[32,22],[39,22],[0,23],[13,23],[39,23],[0,24],[13,24],[39,24],[0,25],[13,25],[39,25],[0,26],[39,26],[0,27],[37,27],[38,27],[39,27],[0,28],[39,28],[0,29],[13,29],[22,29],[39,29],[0,30],[13,30],[22,30],[39,30],[0,31],[13,31],[22,31],[39,31],[0,32],[13,32],[39,32],[0,33],[13,33],[39,33],[0,34],[13,34],[30,34],[31,34],[32,34],[39,34],[0,35],[13,35],[39,35],[0,36],[39,36],[0,37],[39,37],[0,38],[39,38],[0,39],[1,39],[2,39],[3,39],[4,39],[5,39],[6,39],[7,39],[8,39],[9,39],[10,39],[11,39],[12,39],[13,39],[14,39],[15,39],[16,39],[17,39],[18,39],[19,39],[20,39],[21,39],[22,39],[23,39],[24,39],[25,39],[26,39],[27,39],[28,39],[29,39],[30,39],[31,39],[32,39],[33,39],[34,39],[35,39],[36,39],[37,39],[38,39],[39,39]],"enemySpawns":[[37,2],[5,6],[5,27],[31,31]],"leafs":[[10,1],[32,1],[33,1],[34,1],[35,1],[36,1],[37,1],[38,1],[10,2],[33,2],[35,2],[38,2],[10,3],[32,3],[33,3],[34,3],[35,3],[36,3],[38,3],[36,4],[37,4],[38,4],[36,5],[38,5],[10,6],[36,6],[37,6],[38,6],[17,8],[19,8],[21,8],[2,9],[3,9],[4,9],[5,9],[6,9],[7,9],[8,9],[17,9],[19,9],[21,9],[30,9],[31,9],[32,9],[2,10],[3,10],[4,10],[5,10],[6,10],[7,10],[8,10],[17,10],[19,10],[21,10],[2,11],[3,11],[4,11],[5,11],[6,11],[7,11],[8,11],[17,11],[19,11],[21,11],[29,11],[31,11],[33,11],[2,12],[3,12],[4,12],[5,12],[6,12],[7,12],[8,12],[17,12],[19,12],[21,12],[29,12],[31,12],[33,12],[29,13],[31,13],[33,13],[29,14],[31,14],[33,14],[29,15],[31,15],[33,15],[29,16],[31,16],[33,16],[29,17],[31,17],[33,17],[29,18],[31,18],[33,18],[29,19],[31,19],[33,19],[8,22],[13,27],[11,37],[12,37],[13,37],[14,37],[15,37],[16,37],[17,37]],"earths":[[18,5],[19,5],[20,5],[22,5],[23,5],[24,5],[25,5],[18,6],[19,6],[20,6],[22,6],[23,6],[24,6],[25,6],[34,6],[18,7],[19,7],[20,7],[22,7],[23,7],[24,7],[25,7],[34,7],[35,7],[34,8],[35,8]],"rivers":[[18,4],[20,4],[22,4],[24,4],[25,4],[26,4],[27,4],[28,4],[29,4],[22,26],[22,27],[36,27],[22,28]],"ices":[[12,2],[13,2],[14,2],[15,2],[16,2],[17,2],[18,2],[19,2],[20,2],[21,2],[22,2],[23,2],[24,2],[25,2],[26,2],[27,2],[28,2],[29,2],[30,2],[31,2],[37,9],[37,10],[37,11],[37,12],[37,13],[37,14],[37,15],[37,16],[37,17],[37,18],[37,19],[37,20],[37,21],[37,22],[37,23],[37,24],[37,25],[37,26],[19,37],[20,37],[21,37],[22,37],[23,37],[24,37],[25,37],[26,37],[27,37],[28,37],[29,37],[30,37],[31,37],[32,37],[33,37],[34,37],[35,37],[36,37],[37,37],[38,37]],"playerSpawn":[31,6],"titles":"初来乍到","authors":"ayazumi"}';
+	const importMapOriginal = document.getElementById('importMap');
+    importMapOriginal.value = compressedData;   
+	let importData = document.getElementById('importMap').value;
+	const mapElement = document.getElementById('mapzone');
+    realWidth = Math.floor(mapElement.getBoundingClientRect().width);
+    realHeight = Math.floor(mapElement.getBoundingClientRect().height);
+	
+	importMap();	
+}); 
+let randomNumber3 = 0;
+function randomMap(){
+	randomNumber3 = Math.floor(Math.random() * 100);
+	const importMapOriginal = document.getElementById('importMap');
+	compressedData = tankMapStore[randomNumber3 % tankMapStore.length]
+	importMapOriginal.value = compressedData;   
+	importData = document.getElementById('importMap').value;
+	
+	importMap();	
+}
+
+</script>
+	<script>
+
+</script>
+	
+	
+</body>
+</html>
+
+

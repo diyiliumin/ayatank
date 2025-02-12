@@ -1,0 +1,618 @@
+<!--ymo--坦克大战地图制作器--作者ayazumi--当前版本：3.0正式版-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地图制作器</title>
+    <style>
+	    .container {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%; /* 根据每个方块的宽度和数量调整 */
+            gap: 2px; /* 方块之间的间距 */
+        }
+        .block {
+	        border: 1px solid #ccc;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px; /* 圆角效果 */
+            color: white;
+            font-size: 10px;
+        }
+	
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+        td {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            text-align: center;
+            vertical-align: middle;
+        }
+.player {
+    background-color: #0055cc; /* 蓝色稍微变浅，降低饱和度 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.wall {
+    background-color: #e0e0e0; /* 灰色稍微变浅 */
+    color: #333333; /* 文字颜色稍微变暗 */
+}
+
+.birthPlace {
+    background-color: #f0e130; /* 黄色稍微变浅 */
+    color: #333333; /* 文字颜色稍微变暗 */
+}
+
+.regularTank {
+    background-color: #888888; /* 灰色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.attackTank {
+    background-color: #ff5555; /* 红色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.protectTank {
+    background-color: #008000; /* 绿色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.leaf {
+    background-color: #005a00; /* 深绿色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.earth {
+    background-color: #8b4513; /* 棕色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.river {
+    background-color: #003366; /* 深蓝色稍微变浅 */
+    color: #f0f0f0; /* 文字颜色稍微柔和 */
+}
+
+.ice {
+    background-color: #add8e6; /* 浅蓝色稍微变浅 */
+    color: #333333; /* 文字颜色稍微变暗 */
+}
+
+.kuuhaku {
+    background-color: white; /* 白色稍微变浅 */
+    color: #333333; /* 文字颜色稍微变暗 */
+}
+
+        #output {
+            width: 300px;
+            height: 150px;
+            margin-top: 10px;
+            resize: none;
+            font-family: monospace;
+        }
+		
+		.selected {
+            border: 2px solid gold;
+        }
+    </style>
+</head>
+<body>
+    <h1>地图制作器</h1>
+	<p>点击上方方块来选择样式！</p>
+	<p>点击/滑动下方网格来设置方块！导入导出的地图数据都会在右上角！</p>
+	<p>触屏三根手指同时点击地图内部切换模式（拖拽/绘画）</p>
+    <div>
+        <label for="width">地图宽度：</label>
+        <input type="number" id="width" value="10" min="5">
+        <label for="height">地图高度：</label>
+        <input type="number" id="height" value="10" min="5">
+		<button onclick="importMap()">导入地图</button>
+        <button onclick="generateMap()">初始化地图</button>
+        <button onclick="setWalls()">描边</button>
+        <button onclick="exportMap()">导出地图</button>
+		<button onclick="copyOutput()">复制导出内容</button>
+		<button id="sendEmailButton">投稿到YMO官方邮箱（有机会进入地图仓库）</button>
+		<button onclick="window.location.href='https://ymodatabase.neocities.org/tankMapDesign';">访问旧版</button>
+    </div>    
+	<textarea id="output" style="position: fixed; top: 0; right: 0; width: 50%;height:30px; overflow-y: scroll; touch-action: pan-y; padding: 10px;"></textarea>
+    <div class="container">
+        <div class="block wall" id="wall" data-x="0" data-y="0">不可打破的墙壁</div>
+        <div class="block leaf" id="leaf" data-x="1" data-y="0">隐匿行踪的树叶</div>
+        <div class="block earth" id="earth" data-x="2" data-y="0">不堪一击的砖墙</div>
+        <div class="block river" id="river" data-x="3" data-y="0">隔岸对狙的河流</div>
+        <div class="block ice" id="ice" data-x="4" data-y="0">脚底打滑的雪地</div>
+        <div class="block birthPlace" id="birthPlace" data-x="5" data-y="0">敌人刷新处</div>
+        <div class="block player" id="player" data-x="6" data-y="0">快乐老家</div>
+        <div class="block kuuhaku" id="kuuhaku" data-x="7" data-y="0">空白是无敌的</div>
+    </div>
+    <label for="title">请输入标题：</label>
+    <input type="text" id="title" placeholder="无题" required><br>	
+    <label for="author">请输入作者：</label>
+    <input type="text" id="author" placeholder="无名氏" required><br><br>	
+<table id="map"></table>
+
+
+
+    <script>
+
+        let width = 10;
+        let height = 10;
+        let map = [];
+        let playerSpawn = null;
+        let enemySpawns = [];
+		let leafs = [];
+        let walls = [];
+		let earths = [];
+		let rivers = [];
+		let ices = [];
+		let titles = '无题';
+		let authors = 'ayazumi';
+
+        function generateMap() {
+            width = parseInt(document.getElementById('width').value);
+            height = parseInt(document.getElementById('height').value);
+            map = Array.from({ length: height }, () => Array(width).fill('empty'));
+            playerSpawn = null;
+            enemySpawns = [];
+            walls = [];
+            printMap();
+            document.getElementById('output').value = '';
+        }
+
+        function printMap() {
+            const table = document.getElementById('map');
+            table.innerHTML = '';
+
+            for (let i = 0; i < height; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < width; j++) {
+                    const cell = document.createElement('td');
+                    cell.dataset.x = j;
+                    cell.dataset.y = i;
+					
+					
+                    //cell.addEventListener('click', () => toggleCell(j, i));
+					
+					
+                    if (map[i][j] === 'Player') {
+                        cell.classList.add('player');
+                        cell.textContent = 'P';
+                    } else if (map[i][j] === 'wall') {
+                        cell.classList.add('wall');
+                        cell.textContent = 'W';
+                    } else if (map[i][j] === 'birthPlace') {
+                        cell.classList.add('birthPlace');
+                        cell.textContent = 'B';
+                    } else if (map[i][j] === 'leaf') {
+                        cell.classList.add('leaf');
+                        cell.textContent = 'L';
+                    } else if (map[i][j] === 'earth') {
+                        cell.classList.add('earth');
+                        cell.textContent = 'E';
+                    } else if (map[i][j] === 'river') {
+                        cell.classList.add('river');
+                        cell.textContent = 'R';
+                    } else if (map[i][j] === 'ice') {
+                        cell.classList.add('ice');
+                        cell.textContent = 'I';
+                    } else {
+                        cell.classList.remove('player', 'wall', 'birthPlace','leaf','earth','river','ice');
+                        cell.textContent = '';
+                    }
+                    row.appendChild(cell);
+                }
+                table.appendChild(row);
+            }
+        }
+		
+
+		
+		
+        function toggleCell(x, y) {
+                const xset =x;
+                const yset =y;
+				if(selectedType === 'Player'){
+					for (let i = 0; i < map.length; i++) {  // 遍历行
+						for (let j = 0; j < map[i].length; j++) {  // 遍历列
+							if (map[i][j] === "Player") {  // 如果当前元素是 "Player"
+								map[i][j] = "empty";  // 替换为 "empty"
+							}
+						}
+					}
+				}
+                map[yset][xset] = selectedType; // 设置为选中的类型
+                printMap(); // 重新渲染地图
+        }
+
+        function setWalls() {
+            for (let i = 0; i < width; i++) {
+                map[0][i] = 'wall';
+                map[height - 1][i] = 'wall';
+            }
+            for (let i = 0; i < height; i++) {
+                map[i][0] = 'wall';
+                map[i][width - 1] = 'wall';
+            }
+            printMap();
+        }
+        function exportMap() {
+            output.value = JSON.stringify(getMapData(), null, 0);
+        }
+
+function getMapData() {
+    // 初始化返回对象
+    const mapData = {
+        width: width, // 假设地图宽度已经定义
+        height: height, // 假设地图高度已经定义
+        walls: [],
+        enemySpawns: [],
+		leafs: [],
+		earths: [],
+		rivers : [],
+		ices : [],
+        playerSpawn: [],
+		titles: '无题',
+		authors: 'ayazumi'
+    };
+
+    // 遍历地图
+    for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+            const cell = map[i][j]; // 获取当前单元格的值
+            if (cell === 'wall') {
+                mapData.walls.push([j, i]); // 墙壁位置
+            } else if (cell === 'birthPlace') {
+                mapData.enemySpawns.push([j, i]); // 敌人出生点位置
+            } else if (cell === 'leaf') {
+                mapData.leafs.push([j, i]); // 敌人出生点位置
+            } else if (cell === 'earth') {
+                mapData.earths.push([j, i]); // 敌人出生点位置
+            } else if (cell === 'river') {
+                mapData.rivers.push([j, i]); // 敌人出生点位置
+            } else if (cell === 'ice') {
+                mapData.ices.push([j, i]); // 敌人出生点位置
+            } else if (cell === 'Player') {
+                mapData.playerSpawn = [j, i]; // 玩家出生点位置
+            }
+        }
+    }
+	
+	    const titleInput = document.getElementById('title');
+        const authorInput = document.getElementById('author');
+		mapData.titles = titleInput.value.trim();
+		mapData.authors = authorInput.value.trim();
+    return mapData;
+}
+
+        function copyOutput() {
+            const output = document.getElementById('output');
+            output.select();
+            document.execCommand('copy');
+            alert('导出内容已复制到剪贴板！');
+        }
+
+        // 初始化地图
+        generateMap();
+    </script>
+	<script>
+const maper = document.getElementById('map');
+let isDrawing = false;
+//let lastMarkedCell = null; // 记录上一次标记的单元格
+let lastMarkedCell = [null,null];
+let selectedType = '';
+        const container = document.querySelector('.container');
+        // 添加点击事件监听器
+        container.addEventListener('click', (event) => {
+            // 检查点击的目标是否是方块
+            if (event.target.classList.contains('block')) {
+                container.querySelector('.selected')?.classList.remove('selected');
+                // 添加选中状态
+                event.target.classList.add('selected');
+                // 更新当前选中的类型
+				if(event.target.id === 'player'){
+					selectedType = 'Player';
+				}else if(event.target.id === 'kuuhaku'){
+					selectedType = 'empty';
+				}else{
+					selectedType = event.target.id;
+				}
+				}	
+		});
+
+
+// 触摸事件监听器
+maper.addEventListener('touchstart', handleTouchStart);
+
+// 监听鼠标按下事件
+maper.addEventListener('mousedown', (e) => {
+    if (e.target.tagName === 'TD') {
+        isDrawing = true;
+
+            toggleCell(e.target.dataset.x, e.target.dataset.y);
+			lastMarkedCell = [e.target.dataset.x,e.target.dataset.y]; // 更新上一次标记的单元格     
+			disableTextSelection();
+		
+    }
+});
+
+// 监听鼠标移动事件
+maper.addEventListener('mousemove', (e) => {
+    if (isDrawing && e.target.tagName === 'TD') {
+		if(e.target.dataset.x != lastMarkedCell[0] || e.target.dataset.y != lastMarkedCell[1]){
+        toggleCell(e.target.dataset.x, e.target.dataset.y);
+        lastMarkedCell = [e.target.dataset.x,e.target.dataset.y]; // 更新上一次标记的单元格
+		disableTextSelection();
+		}
+    }
+});
+
+let storeMap = [];
+// 处理触摸事件
+function handleTouchStart(e) {
+
+if(usingTouchMode === 0){
+        isDrawing = true;
+
+    if (e.target.tagName === 'TD') {
+       
+    e.preventDefault(); // 阻止默认行为
+            toggleCell(e.target.dataset.x, e.target.dataset.y);
+            lastMarkedCell = [e.target.dataset.x, e.target.dataset.y]; // 更新上一次标记的单元格     
+            disableTextSelection();
+        
+    }
+}	
+}
+
+document.addEventListener("pointermove",(e) => {
+		storeMap = map;
+if(usingTouchMode === 0){
+    e.preventDefault(); // 阻止默认行为
+    if (isDrawing && e.target.tagName === 'TD') {
+        if(e.target.dataset.x != lastMarkedCell[0] || e.target.dataset.y != lastMarkedCell[1]){
+            toggleCell(e.target.dataset.x, e.target.dataset.y);
+            lastMarkedCell = [e.target.dataset.x, e.target.dataset.y]; // 更新上一次标记的单元格
+            disableTextSelection();
+        }
+    }
+}
+});
+
+document.addEventListener('touchend', () => {
+    isDrawing = false;
+    enableTextSelection(); // 启用文本选择
+});
+
+
+
+
+// 监听鼠标抬起事件
+document.addEventListener('mouseup', () => {
+    isDrawing = false;
+	enableTextSelection();
+});
+
+
+// 禁用文本选择
+function disableTextSelection() {
+    document.body.style.userSelect = 'none';
+    document.body.style.webkitUserSelect = 'none';
+    document.body.style.mozUserSelect = 'none';
+    document.body.style.msUserSelect = 'none';
+}
+
+// 启用文本选择
+function enableTextSelection() {
+    document.body.style.userSelect = '';
+    document.body.style.webkitUserSelect = '';
+    document.body.style.mozUserSelect = '';
+    document.body.style.msUserSelect = '';
+}
+
+document.addEventListener('touchmove', function(e) { e.preventDefault(); }, true);
+
+let timer = null; // 定时器变量
+let startTime = 0; // 开始时间
+let endTime = 0; // 结束时间
+let startX = 0, startY = 0; // 触摸起始位置
+let maxMoveX = 0, maxMoveY = 0; // 记录最大移动距离
+let moveThreshold = 10; // 滑动阈值，单位为像素
+
+let modeList = ['画图模式', '拖拽模式'];
+let drawMode = 0;
+let usingTouchMode = 0;
+
+let isModeSwitched = false; // 标志变量，用于控制模式切换逻辑是否已经执行
+
+if (maper) {
+    maper.addEventListener('touchstart', (e) => {
+        // 检测是否为三根手指操作
+		storeMap = map;
+        if (e.touches.length === 3) {
+            // 如果模式切换逻辑尚未执行，则执行
+            if (!isModeSwitched) {
+                drawMode += 1;
+
+                alert('当前模式：' + modeList[drawMode % 2]);
+				map = storeMap;
+				printMap();
+                usingTouchMode = drawMode % 2; // 切换并显示当前模式
+                isModeSwitched = true; // 设置标志为已执行
+            }
+        } else {
+            // 如果不是三根手指操作，重置标志
+            isModeSwitched = false;
+        }
+    });
+
+    maper.addEventListener('touchend', (e) => {
+        // 当手指抬起时，重置标志
+        isModeSwitched = false;
+    });
+} else {
+    console.error("无法找到指定的元素");
+}
+
+
+
+
+    </script>	
+
+    <script>
+        document.getElementById("sendEmailButton").addEventListener("click", function() {
+            // 获取textarea中的内容
+            const content = document.getElementById("output").value;
+
+            // 设置邮件的收件人、主题和内容
+            const recipient = "ymodatabase@126.com";
+            const subject = "ayauzmi坦克大战地图投稿";
+            const body = content;
+
+            // 构造mailto链接
+            const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            // 触发邮件发送
+            window.location.href = mailtoLink;
+        });
+    </script>
+	    
+	<script>
+        function clearMap() {
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    map[i][j] = "";
+                }
+            }
+        }	
+	
+function scrollToBottom(){let ayazumi = 1;}
+function importMap() {
+
+			map = [];
+			walls = [];
+			birthPlaces = [];
+			playerBirth = [];
+			leafList = [];
+			originEarths = [];
+		    rivers = [];
+		    ices = [];
+			authors = '无名氏';
+			titles = '无题';
+			compressedData = document.getElementById('output').value;
+            importData = document.getElementById('output').value;
+
+                const mapData = JSON.parse(importData);
+                width = mapData.width;
+                height = mapData.height;
+                wallLists = mapData.walls;
+				leafLists = mapData.leafs;
+				earthlists = mapData.earths;
+				riverlists = mapData.rivers;
+				icelists = mapData.ices;
+                enemySpawns = mapData.enemySpawns;
+                playerSpawn = mapData.playerSpawn;
+				authors = mapData.authors;
+				titles = mapData.titles;
+				
+
+				
+                map = Array.from({ length: height }, () => Array(width).fill(''));
+                clearMap();
+				try {
+                for (let wall of wallLists) {
+                    map[wall[1]][wall[0]] = 'wall';
+					walls.push([wall[1],wall[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				}
+				
+				try {
+				for (let leaf of leafLists) {
+                    map[leaf[1]][leaf[0]] = 'leaf';
+					leafList.push([leaf[1],leaf[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				}
+				
+				try {
+				for (let earth of earthlists) {
+                    map[earth[1]][earth[0]] = 'earth';
+					originEarths.push([earth[1],earth[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				}
+				
+				try {
+				for (let river of riverlists) {
+                    map[river[1]][river[0]] = 'river';
+					rivers.push([river[1],river[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				}
+				
+				try {
+				for (let ice of icelists) {
+                    map[ice[1]][ice[0]] = 'ice';
+					ices.push([ice[1],ice[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				}
+
+
+				
+				try {
+                for (let spawn of enemySpawns) {
+                    map[spawn[1]][spawn[0]] = 'birthPlace';
+					birthPlaces.push([spawn[1],spawn[0]]);
+                }
+				} catch (error) {
+                scrollToBottom();
+				birthPlaces.push([null,null]);
+				}
+				
+				try {
+                if (playerSpawn) {
+                    map[playerSpawn[1]][playerSpawn[0]] = 'Player';
+					playerBirth = [playerSpawn[0],playerSpawn[1]];
+                }
+				} catch (error) {
+                scrollToBottom();
+				playerBirth = [null,null];
+				}
+				
+				try {
+				document.getElementById('author').value = authors;
+				} catch (error) {
+                scrollToBottom();
+				}
+				
+				try {
+				document.getElementById('title').value = titles;
+				} catch (error) {
+                scrollToBottom();
+				}
+				
+				
+                printMap();
+                scrollToBottom();
+				
+
+        }
+
+	
+	</script>
+</body>
+</html>
