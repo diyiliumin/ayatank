@@ -1,5 +1,6 @@
 本游戏已在以下链接部署：
 <url id="cusc34gonf4r89hp4bi0" type="url" status="parsed" title="Tank Game" wc="489">https://ymodatabase.neocities.org/tank</url>
+<br>
 <url id="cusc34gonf4r89hp4big" type="url" status="parsed" title="Tank Game" wc="489">https://diyiliumin.github.io/ayatank/</url>
 
 🎮 **坦克大战超燃操作指南** 🚀
